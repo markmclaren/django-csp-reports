@@ -20,4 +20,4 @@ class CSPReportAdmin(admin.ModelAdmin):
 
     json_as_html.short_description = "Report"
 
-admin.site.register(CSPReport, CSPReportAdmin)min)
+admin.site.register(CSPReport, CSPReportAdmin)
