@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 import os
 
 PACKAGES = find_packages()
-REQUIREMENTS = ['django >=2.2,<5.0']
+REQUIREMENTS = ['django >=2.2,<5.3']
 TEST_REQUIREMENTS = ['coverage']
 EXTRAS_REQUIRE = {
     'quality': ['isort', 'flake8'],
@@ -21,7 +21,10 @@ CLASSIFIERS = ['License :: OSI Approved :: MIT License',
                'Programming Language :: Python :: 3.8',
                'Programming Language :: Python :: 3.9',
                'Programming Language :: Python :: 3.10',
-               'Programming Language :: Python :: 3.11']
+               'Programming Language :: Python :: 3.11',
+               'Programming Language :: Python :: 3.12'
+               ]
+
 
 
 DESCRIPTION = (
@@ -32,7 +35,7 @@ LONG_DESCRIPTION = open(os.path.join(os.path.dirname(__file__), "README.md")).re
 
 setup(
     name='django-csp-reports',
-    version="{{VERSION_PLACEHOLDER}}",
+    version="2.0.0",
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,
     long_description_content_type="text/markdown",

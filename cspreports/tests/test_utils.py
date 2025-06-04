@@ -1,11 +1,11 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import patch
 
 from django.http import HttpRequest
 from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.test.utils import override_settings
-from django.utils import timezone
+from django.utils import timezone as django_timezone
 
 from cspreports import utils
 from cspreports.models import CSPReport
@@ -137,7 +137,7 @@ class TestParseDateInput(SimpleTestCase):
 
     def test_aware(self):
         with self.settings(USE_TZ=True, TIME_ZONE='Europe/Prague'):
-            self.assertEqual(parse_date_input('2016-05-25'), timezone.make_aware(datetime(2016, 5, 25)))
+            self.assertEqual(parse_date_input('2016-05-25'), django_timezone.make_aware(datetime(2016, 5, 25)))
 
     def test_naive(self):
         with self.settings(USE_TZ=False):
@@ -180,7 +180,7 @@ class SaveReportTest(TestCase):
         utils.save_report(request)
 
         reports = CSPReport.objects.all()
-        self.assertQuerysetEqual(reports.values_list('user_agent'), [('Agent007', )], transform=tuple)
+        self.assertEqual(list(reports.values_list('user_agent')), [('Agent007', )])
         report = reports[0]
         self.assertEqual(report.json, body)
         self.assertFalse(report.is_valid)
@@ -193,7 +193,7 @@ class SaveReportTest(TestCase):
         utils.save_report(request)
 
         report = CSPReport.objects.first()
-        self.assertQuerysetEqual(report.user_agent, '')
+        self.assertEqual(report.user_agent, '')
 
     def test_save_report_correct_format_missing_mandatory_fields(self):
         """ Test that the `save_report` saves CSPReport instance even if some required CSP Report
@@ -214,7 +214,7 @@ class SaveReportTest(TestCase):
         utils.save_report(request)
 
         reports = CSPReport.objects.all()
-        self.assertQuerysetEqual(reports.values_list('user_agent'), [('Agent007', )], transform=tuple)
+        self.assertEqual(list(reports.values_list('user_agent')), [('Agent007', )])
         report = reports[0]
         self.assertEqual(report.json, json.dumps(body))
         self.assertTrue(report.is_valid)

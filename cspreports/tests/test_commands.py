@@ -1,11 +1,11 @@
 """Test commands."""
-from datetime import datetime
+from datetime import datetime, timezone
 from io import StringIO
 from unittest.mock import patch
 
 from django.core.management import CommandError, call_command
 from django.test import TestCase, override_settings
-from django.utils import timezone
+from django.utils import timezone as django_timezone
 
 from cspreports.models import CSPReport
 
@@ -40,9 +40,9 @@ class TestCleanCspreports(TestCase):
         with patch('cspreports.utils.now', return_value=mock_now):
             call_command('clean_cspreports')
 
-        self.assertQuerysetEqual(CSPReport.objects.values_list('created'),
-                                 [(datetime(2016, 4, 19, 22, 0, 0, tzinfo=timezone.utc), )],
-                                 transform=tuple)
+        expected = [(datetime(2016, 4, 19, 22, 0, 0, tzinfo=timezone.utc), )]
+        actual = list(CSPReport.objects.values_list('created'))
+        self.assertEqual(actual, expected)
 
     def test_invalid(self):
         # Test invalid limit input

@@ -151,7 +151,7 @@ class TestFromMessage(SimpleTestCase):
         self.assertEqual(report.line_number, 666)
 
     def test_invalid_line_number(self):
-        # Test invalid line number is ignored.
+        # Test negative line number is treated as invalid in Django 5.2
         data = {'csp-report': {'document-uri': 'http://protected.example.cz/',
                                'referrer': 'http://referrer.example.cz/',
                                'blocked-uri': 'http://dangerous.example.cz/',
@@ -161,7 +161,8 @@ class TestFromMessage(SimpleTestCase):
         message = json.dumps(data)
         report = CSPReport.from_message(message)
 
-        self.assertTrue(report.is_valid)
+        # In Django 5.2, negative integers are invalid for PositiveIntegerField
+        self.assertFalse(report.is_valid)
         self.assertEqual(report.json, message)
         self.assertEqual(report.document_uri, 'http://protected.example.cz/')
         self.assertEqual(report.referrer, 'http://referrer.example.cz/')
