@@ -4,11 +4,15 @@ from cspreports.models import get_report_model
 
 CSPReport = get_report_model()
 
+@admin.register(CSPReport)
 class CSPReportAdmin(admin.ModelAdmin):
     list_display = ('id', 'created', 'document_uri', 'blocked_uri')
     fields = ('created', 'modified', 'json_as_html')
     readonly_fields = ('created', 'modified', 'json_as_html')
 
+    @admin.display(
+        description="Report"
+    )
     def json_as_html(self, instance):
         return mark_safe("<br />" + instance.json_as_html())
 
@@ -18,6 +22,4 @@ class CSPReportAdmin(admin.ModelAdmin):
     def blocked_uri(self, instance):
         return instance.data.get('csp-report', {}).get('blocked-uri')
 
-    json_as_html.short_description = "Report"
 
-admin.site.register(CSPReport, CSPReportAdmin)

@@ -45,7 +45,7 @@ def format_report(jsn):
 
 
 def email_admins(request):
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    user_agent = request.headers.get('user-agent', '')
     report = format_report(request.body)
     message = "User agent:\n%s\n\nReport:\n%s" % (user_agent, report)
     mail_admins("CSP Violation Report", message)
@@ -62,7 +62,7 @@ def save_report(request):
         message = message.decode(request.encoding or settings.DEFAULT_CHARSET)
 
     report = CSPReport.from_message(message)
-    report.user_agent = request.META.get('HTTP_USER_AGENT', '')
+    report.user_agent = request.headers.get('user-agent', '')
     report.save()
 
 

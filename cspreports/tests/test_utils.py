@@ -175,7 +175,7 @@ class SaveReportTest(TestCase):
         """ Test that the `save_report` handler correctly saves to the DB. """
         assert CSPReport.objects.count() == 0  # sanity
         body = '{"document-uri": "http://example.com/"}'
-        request = RequestFactory(HTTP_USER_AGENT='Agent007').post('/dummy/', body, content_type=JSON_CONTENT_TYPE)
+        request = RequestFactory(headers={"user-agent": 'Agent007'}).post('/dummy/', body, content_type=JSON_CONTENT_TYPE)
 
         utils.save_report(request)
 
@@ -209,7 +209,7 @@ class SaveReportTest(TestCase):
                 'original-policy': 'Nothing is allowed.'
             }
         }
-        request = RequestFactory(HTTP_USER_AGENT='Agent007').post('/dummy/', json.dumps(body),
+        request = RequestFactory(headers={"user-agent": 'Agent007'}).post('/dummy/', json.dumps(body),
                                                                   content_type=JSON_CONTENT_TYPE)
         utils.save_report(request)
 
@@ -237,7 +237,7 @@ class SaveReportTest(TestCase):
                 'column-number': 32,
             }
         }
-        request = RequestFactory(HTTP_USER_AGENT='Agent007').post('/dummy/', json.dumps(body),
+        request = RequestFactory(headers={"user-agent": 'Agent007'}).post('/dummy/', json.dumps(body),
                                                                   content_type=JSON_CONTENT_TYPE)
         utils.save_report(request)
 

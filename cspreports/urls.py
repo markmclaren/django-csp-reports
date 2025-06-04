@@ -1,7 +1,7 @@
-from django.urls import re_path
+from django.urls import path
 
 from .views import report_csp
 
 urlpatterns = [
-    re_path(r'^report/$', report_csp, name='report_csp'),
+    path('report/', report_csp, name='report_csp'),
 ]
