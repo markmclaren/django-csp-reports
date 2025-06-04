@@ -1,5 +1,5 @@
 """Test `summary` module."""
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import sentinel
 
 from django.test import SimpleTestCase, TestCase
@@ -82,7 +82,10 @@ class TestCollect(TestCase):
     """Test `collect` function."""
 
     def test_no_reports(self):
-        summary = collect(datetime(1970, 1, 1), datetime(1970, 12, 31))
+        summary = collect(
+            datetime(1970, 1, 1, tzinfo=timezone.utc),
+            datetime(1970, 12, 31, tzinfo=timezone.utc)
+        )
 
         self.assertEqual(summary.total_count, 0)
         self.assertEqual(summary.valid_count, 0)
@@ -92,9 +95,12 @@ class TestCollect(TestCase):
         self.assertCountEqual(summary.invalid_reports, ())
 
     def test_invalid_reports(self):
-        report1 = create_csp_report(datetime(1970, 1, 1, 12))
-        report2 = create_csp_report(datetime(1970, 1, 1, 12))
-        summary = collect(datetime(1970, 1, 1), datetime(1970, 12, 31))
+        report1 = create_csp_report(datetime(1970, 1, 1, 12, tzinfo=timezone.utc))
+        report2 = create_csp_report(datetime(1970, 1, 1, 12, tzinfo=timezone.utc))
+        summary = collect(
+            datetime(1970, 1, 1, tzinfo=timezone.utc),
+            datetime(1970, 12, 31, tzinfo=timezone.utc)
+        )
 
         self.assertEqual(summary.total_count, 2)
         self.assertEqual(summary.valid_count, 0)
@@ -104,12 +110,22 @@ class TestCollect(TestCase):
         self.assertCountEqual(summary.invalid_reports, (report1, report2))
 
     def test_valid_reports(self):
-        report1 = create_csp_report(datetime(1970, 1, 1, 12), is_valid=True, document_uri='http://example.cz/',
-                                    blocked_uri='http://example.evil/')
-        report2 = create_csp_report(datetime(1970, 1, 1, 12), is_valid=True,
-                                    document_uri='http://example.cz/?key=value',
-                                    blocked_uri='http://example.evil/')
-        summary = collect(datetime(1970, 1, 1), datetime(1970, 12, 31))
+        report1 = create_csp_report(
+            datetime(1970, 1, 1, 12, tzinfo=timezone.utc),
+            is_valid=True,
+            document_uri='http://example.cz/',
+            blocked_uri='http://example.evil/'
+        )
+        report2 = create_csp_report(
+            datetime(1970, 1, 1, 12, tzinfo=timezone.utc),
+            is_valid=True,
+            document_uri='http://example.cz/?key=value',
+            blocked_uri='http://example.evil/'
+        )
+        summary = collect(
+            datetime(1970, 1, 1, tzinfo=timezone.utc),
+            datetime(1970, 12, 31, tzinfo=timezone.utc)
+        )
 
         self.assertEqual(summary.total_count, 2)
         self.assertEqual(summary.valid_count, 2)

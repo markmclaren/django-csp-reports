@@ -59,8 +59,12 @@ class TestMakeCspSummary(TestCase):
         self.assertIn('CSP report summary', buff.getvalue())
 
     def test_report(self):
-        create_csp_report(datetime(1970, 1, 1, 12), is_valid=True, document_uri='http://example.cz/',
-                          blocked_uri='http://example.evil/')
+        create_csp_report(
+            datetime(1970, 1, 1, 12, tzinfo=timezone.utc),
+            is_valid=True,
+            document_uri='http://example.cz/',
+            blocked_uri='http://example.evil/'
+        )
         buff = StringIO()
 
         call_command('make_csp_summary', stdout=buff, since='1970-01-01')

@@ -6,6 +6,7 @@ from django.db import models
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.apps import apps
+from django.utils import timezone
 
 from cspreports.conf import app_settings
 
@@ -66,8 +67,8 @@ class CSPReportBase(models.Model):
         ordering = ('-created',)
         abstract = True
 
-    created = models.DateTimeField(auto_now_add=True)
-    modified = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(default=timezone.now, editable=False)
+    modified = models.DateTimeField(default=timezone.now)
     user_agent = models.TextField(blank=True)
     json = models.TextField()
     is_valid = models.BooleanField(default=False)
@@ -174,6 +175,12 @@ class CSPReportBase(models.Model):
 
         formatted_json = utils.format_report(self.json)
         return mark_safe("<pre>\n%s</pre>" % escape(formatted_json))
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.created = timezone.now()
+        self.modified = timezone.now()
+        super().save(*args, **kwargs)
 
 
 class CSPReport(CSPReportBase):
